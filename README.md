@@ -1,85 +1,180 @@
 # NextGen HRMS – Training & Learning Management Module
 
-## 📌 Project Overview
+## Overview
 
-This project is being developed as part of the Internship Program under the Human Resource Management System (HRMS).
+The **NextGen HRMS – Training & Learning Management Module** is a full-stack web application developed as part of an HRMS internship project. The module enables employees to manage training records and certification details while providing a foundation for future HRMS functionalities.
 
-The current module focuses on Training & Learning Management where employees can submit training details and upload certificates, while reporting officers can review employee records and verify training information.
-
-The project follows a full-stack architecture:
-
-- Frontend: React.js + Vite
-- Backend: Spring Boot
-- Database: PostgreSQL
-- Version Control: Git & GitHub
+The application follows a modern client-server architecture using **React.js** for the frontend, **Spring Boot** for the backend, and **PostgreSQL** for data persistence.
 
 ---
 
-## 🎯 Current Objectives
+## Features
 
 ### Employee Features
 
-- Submit training details
-- Upload training certificates
-- View submitted records
+* Submit training records
+* Upload training certificate details
+* Track training status
+* View submitted training information
+* Search and filter training records
 
-### Reporting Officer Features
+### Training Management Features
 
-- View employee profiles
-- Verify training records
-- Review uploaded certificates
+* Training module management
+* Employee training tracking
+* Certificate record management
+* Status monitoring (Completed, In Progress, Under Review, Expired)
+* Department-wise training organization
 
 ### System Features
 
-- REST API Integration
-- PostgreSQL Database Storage
-- Training Record Management
-- Certificate Management
+* REST API Integration
+* PostgreSQL Database Integration
+* Responsive User Interface
+* Real-time Data Fetching
+* Form Validation
+* Dynamic Search & Filtering
+* Grid and Table View Support
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 
-- React.js
-- Vite
-- JavaScript
-- HTML5
-- CSS3
+* React.js
+* Vite
+* JavaScript (ES6+)
+* Tailwind CSS
+* Framer Motion
+* Lucide React Icons
 
 ### Backend
 
-- Spring Boot
-- Java
-- REST APIs
+* Spring Boot 4
+* Java 21
+* Spring Data JPA
+* REST APIs
 
 ### Database
 
-- PostgreSQL
+* PostgreSQL
 
-### Tools
+### Development Tools
 
-- Git
-- GitHub
-- VS Code
-- Postman
+* Git
+* GitHub
+* VS Code
+* Maven
+* Postman
 
 ---
 
-## 📂 Frontend Structure
+## System Architecture
 
 ```text
-src/
+React Frontend
+       │
+       ▼
+Spring Boot REST APIs
+       │
+       ▼
+PostgreSQL Database
+```
+
+---
+
+## Implemented REST APIs
+
+### Fetch All Training Records
+
+```http
+GET /api/certificates/all
+```
+
+Returns all available training records.
+
+---
+
+### Save Training Record
+
+```http
+POST /api/certificates/save
+```
+
+Stores employee training information and certificate details.
+
+---
+
+### Get Employee Training Records
+
+```http
+GET /api/certificates/employee/{employeeId}
+```
+
+Fetches training records for a specific employee.
+
+---
+
+### Download Certificate
+
+```http
+GET /api/certificates/download/{recordId}
+```
+
+Downloads or previews a stored certificate document.
+
+---
+
+## Database Design
+
+### Entities
+
+#### Employee
+
+* Employee ID
+* Employee Name
+* Department
+
+#### Department
+
+* Department ID
+* Department Name
+
+#### Training Module
+
+* Module ID
+* Module Name
+* Training Type
+
+#### Training Record
+
+* Record ID
+* Employee Reference
+* Module Reference
+* Certificate Number
+* Instructor Name
+* Issue Date
+* Status
+* Remarks
+* Uploaded Certificate Details
+
+---
+
+## Project Structure
+
+```text
+src
 │
-├── assets/
+├── assets
 │   ├── hero.png
 │   ├── meity_logo.svg
 │   ├── nic_logo.svg
 │   ├── tripura_logo.png
 │   └── tripura_logo.svg
 │
-├── components/
+├── components
+│   ├── BackToTop.jsx
 │   ├── FaqAccordion.jsx
 │   ├── Footer.jsx
 │   ├── Header.jsx
@@ -88,234 +183,160 @@ src/
 │   ├── TrainingCards.jsx
 │   └── TrainingForm.jsx
 │
-├── data/
-│   └── trainingData.js
+├── data
+│   └── trainingData.json
 │
-├── pages/
+├── pages
+│   └── Home.jsx
+│
+├── services
+│   └── trainingService.js
 │
 ├── App.jsx
 ├── App.css
 ├── index.css
 └── main.jsx
+
+Backend
+│
+├── controller
+│   └── TrainingRecordController.java
+│
+├── entity
+│   ├── Department.java
+│   ├── Employee.java
+│   ├── TrainingModule.java
+│   └── TrainingRecord.java
+│
+├── repository
+│   ├── DepartmentRepository.java
+│   ├── EmployeeRepository.java
+│   ├── TrainingModuleRepository.java
+│   └── TrainingRecordRepository.java
+│
+├── service
+│   └── TrainingRecordService.java
+│
+└── HrmsApplication.java
 ```
 
 ---
 
-## 📋 Internship Tasks Completed / In Progress
-
-### Phase 1
-
-- [ ] Design Database Schema
-- [ ] Create ER Diagram
-- [ ] Build REST API
-- [ ] Prepare Project Report
-- [ ] Develop React Form
-
-### Phase 2
-
-- [ ] Integrate APIs with React
-- [ ] Configure PostgreSQL Database
-- [ ] Validate Backend Database Integration
-- [ ] Upload Frontend to GitHub
-- [ ] Upload Backend to GitHub
-
-### React Revision
-
-- [ ] JSX
-- [ ] Components & Props
-- [ ] useState Hook
-- [ ] Virtual DOM
-
----
-
-## 🚀 Setup Instructions
+## Setup Instructions
 
 ### Clone Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/manikanta-tamminana/Training_Module_of_NextGen_HRMS.git
+cd Training_Module_of_NextGen_HRMS
 ```
+
+---
 
 ### Frontend Setup
 
+Install dependencies:
+
 ```bash
 npm install
+```
+
+Run development server:
+
+```bash
 npm run dev
 ```
 
+Frontend runs at:
+
+```text
+http://localhost:5173
+```
+
+---
+
 ### Backend Setup
 
+Configure PostgreSQL database credentials inside:
+
+```text
+src/main/resources/application.properties
+```
+
+Run backend:
+
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
+```
+
+Backend runs at:
+
+```text
+http://localhost:8080
 ```
 
 ---
 
-## 🌿 Git Workflow
+## Current Progress
 
-### Create Branch
+### Completed
 
-```bash
-git checkout -b feature/your-feature-name
-```
+* React Frontend Development
+* Spring Boot Backend Development
+* PostgreSQL Integration
+* REST API Integration
+* Training Submission Form
+* Dynamic Record Fetching
+* Employee & Training Data Modeling
+* Search Functionality
+* Status Filtering
+* Responsive UI
+* Training Record Persistence
 
-Example:
+### In Progress
 
-```bash
-git checkout -b feature/react-form
-git checkout -b feature/api-integration
-git checkout -b feature/database-schema
-```
-
----
-
-## ✅ Commit Guidelines
-
-Use meaningful commit messages.
-
-Examples:
-
-```bash
-git commit -m "Added training submission form"
-```
-
-```bash
-git commit -m "Integrated employee API"
-```
-
-```bash
-git commit -m "Created PostgreSQL schema"
-```
+* Record Deletion API
+* Enhanced Validation
+* Role-Based Access Control
+* Authentication & Authorization
 
 ---
 
-## 🔀 Pull Request Guidelines
+## Future Enhancements
 
-Before creating a Pull Request:
-
-1. Pull latest changes
-
-```bash
-git pull origin main
-```
-
-2. Resolve conflicts if any.
-
-3. Push your branch.
-
-```bash
-git push origin feature/your-feature-name
-```
-
-4. Create Pull Request on GitHub.
+* User Authentication
+* Role-Based Access Control
+* Employee Dashboard
+* Analytics & Reporting
+* Certificate File Management
+* Leave Management Module
+* Attendance Management Module
+* Performance Management Module
+* Notification System
 
 ---
 
-## 🐛 Raising Issues
+## Learning Outcomes
 
-If you find a bug or want to request a feature:
+Through this project, the following concepts were implemented and practiced:
 
-### Bug Report
-
-Include:
-
-- Description
-- Steps to Reproduce
-- Expected Behaviour
-- Actual Behaviour
-- Screenshots (if available)
-
-### Feature Request
-
-Include:
-
-- Problem Statement
-- Proposed Solution
-- Benefits
+* React Components & Props
+* State Management using useState
+* React Hooks
+* REST API Integration
+* Spring Boot Development
+* JPA & Hibernate
+* PostgreSQL Database Design
+* Full Stack Application Development
+* Git & GitHub Workflow
 
 ---
 
-## 📝 Pull Request Template
+## Author
 
-### Description
+**Manikanta Tamminana**
 
-Brief summary of changes made.
+Intern – NextGen HRMS Project
 
-### Changes
-
-- Added:
-- Updated:
-- Fixed:
-
-### Screenshots
-
-Attach screenshots if UI changes were made.
-
-### Testing
-
-- [ ] Tested locally
-- [ ] No console errors
-- [ ] API working correctly
-
----
-
-## 📌 Branch Naming Convention
-
-| Type | Example |
-|--------|----------|
-| Feature | feature/training-form |
-| Bug Fix | fix/form-validation |
-| Database | db/schema-update |
-| Documentation | docs/readme-update |
-
----
-
-## ⚠ Important Rules
-
-- Never push directly to `main`
-- Always create a feature branch
-- Create Pull Requests for all changes
-- Keep commits small and meaningful
-- Review code before merging
-- Update documentation whenever new functionality is added
-
----
-
-## 🔮 Future Scope
-
-The following modules may be added in future mentorship sessions:
-
-- Employee Management
-- Leave Management
-- Attendance Management
-- Performance Management
-- Recruitment Management
-- Notifications
-- Role-Based Access Control
-- Dashboard Analytics
-
----
-
-## 📈 Project Status
-
-Current Phase:
-Training & Learning Management Module Development
-
-This repository will continue evolving as new tasks and requirements are assigned during the internship.
-
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+GitHub:
+https://github.com/manikanta-tamminana
