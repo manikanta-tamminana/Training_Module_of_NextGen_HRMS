@@ -44,6 +44,10 @@ public class TrainingRecordController {
             @RequestParam(value = "remarks",required = false) String remarks,
             @RequestParam(value = "certificateFile", required = false)MultipartFile file){
 
+        if(employeeName == null || employeeName.isBlank()){
+            return ResponseEntity.badRequest()
+                    .body("Employee name is required");
+        }
         try{
             LocalDate parsedDate = null;
             if(issueDate != null && !issueDate.isEmpty()){
@@ -53,9 +57,9 @@ public class TrainingRecordController {
             trainingService.saveRecord(
                     employeeName,employeeId,department,trainingModule,trainingType,instructor,status,
                     parsedDate,remarks,certificateNumber,file);
-            return ResponseEntity.status(HttpStatus.OK).body("Certificate saved successfully gng");
+            return ResponseEntity.ok("Training record saved successfully");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("GNG we have faced some error"+ e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save training record: "+ e.getMessage());
         }
     }
 
@@ -84,6 +88,10 @@ public class TrainingRecordController {
         }catch (Exception e){
             return ResponseEntity.internalServerError().build();
         }
+    }
+    @GetMapping("/all")
+    public ResponseEntity<List<TrainingRecord>> getAllRecords() {
+        return ResponseEntity.ok(trainingRepo.findAll());
     }
 
 }

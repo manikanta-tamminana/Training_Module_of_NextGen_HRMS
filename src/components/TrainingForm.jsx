@@ -1,7 +1,7 @@
 import React from 'react';
 import { Send, RotateCcw, Upload, FileText, X } from 'lucide-react';
 
-export default function TrainingForm({ formData, onChange, onSubmit, onReset }) {
+export default function TrainingForm({ formData, onChange, onSubmit, onReset, loading}) {
   const departments = [
     'Finance Department',
     'Agriculture',
@@ -283,12 +283,12 @@ export default function TrainingForm({ formData, onChange, onSubmit, onReset }) 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row items-center gap-3 pt-4 border-t border-gov-border">
           <button
-            type="submit"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-accent-orange hover:bg-accent-orange-hover text-dark-navy font-bold py-2.5 px-6 rounded-[4px] shadow-sm transition-colors cursor-pointer"
-          >
-            <Send className="w-4 h-4" />
-            Submit Record
-          </button>
+  type="submit"
+  disabled={loading}
+  className="disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  {loading ? "Submitting..." : "Submit Record"}
+</button>
           
           <button
             type="button"

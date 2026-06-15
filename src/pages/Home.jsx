@@ -7,8 +7,12 @@ import TrainingCards from '../components/TrainingCards';
 import FaqAccordion from '../components/FaqAccordion';
 import Footer from '../components/Footer';
 import BackToTop from '../components/BackToTop';
-import initialData from '../data/trainingData.json';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import {
+  fetchAllRecords,
+  saveTrainingRecord
+} from "../services/trainingService";
+
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 
 const emptyForm = {
@@ -29,6 +33,7 @@ export default function Home() {
   const [formData, setFormData] = useState(emptyForm);
   const [records, setRecords] = useState([]);
   const [notification, setNotification] = useState(null); // { type: 'success'|'error', message: '' }
+  const [loading,setLoading] = useState(false);
 
   // Refs for smooth scroll
   const formRef = useRef(null);
@@ -36,19 +41,21 @@ export default function Home() {
 
   // Initialize records from localStorage or JSON file
   useEffect(() => {
-    const stored = localStorage.getItem('tripura_hrms_training');
-    if (stored) {
-      try {
-        setRecords(JSON.parse(stored));
-      } catch (err) {
-        console.error('Failed to parse local records', err);
-        setRecords(initialData);
-      }
-    } else {
-      localStorage.setItem('tripura_hrms_training', JSON.stringify(initialData));
-      setRecords(initialData);
-    }
-  }, []);
+const loadRecords = async () => {
+try {
+const data = await fetchAllRecords();
+setRecords(data);
+} catch (error) {
+triggerNotification(
+"error",
+"Unable to load training records"
+);
+}
+};
+
+loadRecords();
+}, []);
+
 
   const triggerNotification = (type, message) => {
     setNotification({ type, message });
@@ -70,47 +77,57 @@ export default function Home() {
     triggerNotification('info', 'Form input fields cleared.');
   };
 
-  const handleFormSubmit = () => {
-    // Basic verification
-    if (!formData.employeeName || !formData.employeeId || !formData.department || !formData.trainingModule) {
-      triggerNotification('error', 'Please fill in all mandatory fields (*).');
-      return;
-    }
+  const handleFormSubmit = async () => {
+try {
+setLoading(true);
 
-    // Check if record already exists (combination of ID and Module)
-    const exists = records.some(
-      (rec) => rec.employeeId.toLowerCase() === formData.employeeId.toLowerCase() && 
-             rec.trainingModule.toLowerCase() === formData.trainingModule.toLowerCase()
-    );
 
-    if (exists) {
-      triggerNotification('error', `A record for Employee ID ${formData.employeeId} under the module "${formData.trainingModule}" already exists.`);
-      return;
-    }
 
-    // Add to records list
-    const updatedRecords = [formData, ...records];
-    setRecords(updatedRecords);
-    localStorage.setItem('tripura_hrms_training', JSON.stringify(updatedRecords));
+await saveTrainingRecord(formData);
 
-    // Reset Form & Notify
-    setFormData(emptyForm);
-    triggerNotification('success', `Training record for ${formData.employeeName} has been recorded successfully under Ref ID: HRMS-TR-${Math.floor(1000 + Math.random() * 9000)}.`);
+const latestRecords = await fetchAllRecords();
+console.log("LATEST RECORDS", latestRecords);
+
+setRecords(latestRecords);
+
+setFormData(emptyForm);
+
+triggerNotification(
+  "success",
+  "Training record saved successfully"
+);
+
+
+} catch (error) {
+triggerNotification(
+"error",
+error.message || "Failed to save training record"
+);
+} finally {
+setLoading(false);
+}
+};
+
+
     
-    // Smooth scroll to records to show addition
-    setTimeout(() => {
-      scrollToRef(recordsRef);
-    }, 400);
-  };
 
-  const handleDeleteRecord = (id, module) => {
-    const updated = records.filter(
-      (rec) => !(rec.employeeId === id && rec.trainingModule === module)
-    );
-    setRecords(updated);
-    localStorage.setItem('tripura_hrms_training', JSON.stringify(updated));
-    triggerNotification('success', `Record deleted successfully.`);
-  };
+  const handleDeleteRecord = (recordId) => {
+  console.log("Received ID:", recordId);
+
+  const updated = records.filter(
+    rec => rec.recordId !== recordId
+  );
+
+  console.log("Before:", records.length);
+  console.log("After:", updated.length);
+
+  setRecords(updated);
+
+  triggerNotification(
+    "success",
+    "Record deleted successfully."
+  );
+};
 
   const scrollToRef = (ref) => {
     if (ref.current) {
@@ -163,12 +180,13 @@ export default function Home() {
         <div ref={formRef} className="grid grid-cols-1 lg:grid-cols-12 gap-8 scroll-mt-28">
           {/* Form Side */}
           <div className="lg:col-span-7 h-full">
-            <TrainingForm 
-              formData={formData}
-              onChange={handleFormChange}
-              onReset={handleFormReset}
-              onSubmit={handleFormSubmit}
-            />
+            <TrainingForm
+  formData={formData}
+  onChange={handleFormChange}
+  onReset={handleFormReset}
+  onSubmit={handleFormSubmit}
+  loading={loading}
+/>
           </div>
 
           {/* Real-time JSON Preview Side */}

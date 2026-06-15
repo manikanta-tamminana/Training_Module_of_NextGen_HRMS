@@ -8,17 +8,27 @@ export default function TrainingCards({ records, onDeleteRecord }) {
   const [statusFilter, setStatusFilter] = useState('All');
 
   // Filter logic
-  const filteredRecords = records.filter(rec => {
-    const matchesSearch = 
-      rec.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rec.employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rec.trainingModule.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'All' || rec.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  });
+  const filteredRecords = records.filter((rec) => {
 
+  const employeeName =
+    rec.employee?.employeeName || rec.employeeName || "";
+
+  const employeeId =
+    rec.employee?.employeeId || rec.employeeId || "";
+
+  const trainingModule =
+    rec.module?.moduleName || rec.trainingModule || "";
+
+  const matchesSearch =
+    employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    trainingModule.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const matchesStatus =
+    statusFilter === "All" || rec.status === statusFilter;
+
+  return matchesSearch && matchesStatus;
+});
   // Helper to get status colors
   const getStatusBadgeClass = (status) => {
     switch (status) {
@@ -136,7 +146,7 @@ export default function TrainingCards({ records, onDeleteRecord }) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    key={rec.employeeId + rec.trainingModule}
+                    key={rec.recordId}
                     className={`bg-white border border-gov-border rounded-[4px] shadow-xs hover:shadow-md transition-shadow flex flex-col relative overflow-hidden ${getCardBorderColor(rec.status, idx)}`}
                   >
                     {/* Index & Status */}
@@ -152,7 +162,7 @@ export default function TrainingCards({ records, onDeleteRecord }) {
                     {/* Content Body */}
                     <div className="px-5 pb-5 flex-grow flex flex-col">
                       <h3 className="text-md font-extrabold text-primary-blue leading-snug mb-3">
-                        {rec.trainingModule}
+                        {rec.module?.moduleName || rec.trainingModule}
                       </h3>
                       
                       {/* Detailed Stats */}
@@ -160,8 +170,8 @@ export default function TrainingCards({ records, onDeleteRecord }) {
                         <div className="flex items-center gap-2 pb-1.5 border-b border-gov-bg/60">
                           <User className="w-3.5 h-3.5 text-primary-blue/70" />
                           <div>
-                            <span className="font-semibold text-text-primary block">{rec.employeeName}</span>
-                            <span className="text-[10px] text-text-secondary uppercase">ID: {rec.employeeId} • {rec.department}</span>
+                            <span className="font-semibold text-text-primary block">{rec.employee?.employeeName || rec.employeeName}</span>
+                            <span className="text-[10px] text-text-secondary uppercase">ID: {rec.employee?.employeeId || rec.employeeId} • {rec.employee?.department?.departmentName || rec.department}</span>
                           </div>
                         </div>
 
@@ -204,7 +214,10 @@ export default function TrainingCards({ records, onDeleteRecord }) {
                       {/* Actions */}
                       <div className="flex gap-2 mt-4 pt-3 border-t border-gov-border/60">
                         <button
-                          onClick={() => onDeleteRecord(rec.employeeId, rec.trainingModule)}
+                          onClick={() => {
+  console.log("Deleting:", rec);
+  onDeleteRecord(rec.recordId);
+}}
                           className="flex-1 flex items-center justify-center gap-1 border border-rose-200 hover:bg-rose-50 text-rose-600 font-bold text-xs py-2 rounded-[3px] transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -239,7 +252,7 @@ export default function TrainingCards({ records, onDeleteRecord }) {
                 <tbody className="divide-y divide-gov-border text-xs md:text-sm">
                   {filteredRecords.map((rec, idx) => (
                     <tr 
-                      key={rec.employeeId + rec.trainingModule} 
+                      key={rec.recordId}
                       className={`hover:bg-gov-bg/30 transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-gov-bg/15'}`}
                     >
                       {/* S.No */}
@@ -249,16 +262,24 @@ export default function TrainingCards({ records, onDeleteRecord }) {
 
                       {/* Employee Details */}
                       <td className="py-4 px-4 border-r border-gov-border">
-                        <div className="font-extrabold text-primary-blue text-sm">{rec.employeeName}</div>
-                        <div className="text-[10px] text-text-secondary uppercase mt-0.5">ID: {rec.employeeId}</div>
-                        <div className="text-[11px] font-medium text-text-secondary mt-0.5">{rec.department}</div>
+                        <div className="font-extrabold text-primary-blue text-sm">{rec.employee?.employeeName || rec.employeeName}</div>
+                        <div className="text-[10px] text-text-secondary uppercase mt-0.5">
+  ID: {rec.employee?.employeeId || rec.employeeId}
+</div>
+                        <div className="text-[11px] font-medium text-text-secondary mt-0.5">
+  {rec.employee?.department?.departmentName || rec.department}
+</div>
                       </td>
 
                       {/* Training Details */}
                       <td className="py-4 px-4 border-r border-gov-border">
-                        <div className="font-bold text-text-primary text-sm">{rec.trainingModule}</div>
+                       <div className="font-bold text-text-primary text-sm">
+  {rec.module?.moduleName || rec.trainingModule}
+</div>
                         <div className="text-[10px] text-text-secondary uppercase mt-1">
-                          Type: <span className="font-bold">{rec.trainingType}</span>
+                          Type: <span className="font-bold">
+  {rec.module?.trainingType || rec.trainingType}
+</span>
                         </div>
                         {rec.remarks && (
                           <div className="text-[10px] text-text-secondary italic mt-1 max-w-xs truncate" title={rec.remarks}>
