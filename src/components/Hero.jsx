@@ -1,5 +1,4 @@
-import React from 'react';
-import { FilePlus, Eye, GraduationCap } from 'lucide-react';
+import { FilePlus, Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Hero({ onScrollToForm, onScrollToCards }) {

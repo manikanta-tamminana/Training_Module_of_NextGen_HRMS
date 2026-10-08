@@ -19,10 +19,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Locale;
 
 @Service
 public class TrainingRecordService {
@@ -92,24 +92,53 @@ public class TrainingRecordService {
        record.setIssueDate(issueDate);
        record.setStatus(status);
 
-       if(file != null && !file.isEmpty()){
+       if(file != null){
+           validateCertificate(file);
            Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-           if(!Files.exists(uploadPath)){
-               Files.createDirectories(uploadPath);
+           Files.createDirectories(uploadPath);
+           String originalFname = StringUtils.cleanPath(file.getOriginalFilename() == null ? "" : file.getOriginalFilename());
+           String extension = originalFname.substring(originalFname.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
+           String uniqueFname = UUID.randomUUID() + "." + extension;
+           Path targetLocation = uploadPath.resolve(uniqueFname).normalize();
+           if (!targetLocation.startsWith(uploadPath)) {
+               throw new IllegalArgumentException("Invalid certificate filename");
            }
-           String originalFname= StringUtils.cleanPath(file.getOriginalFilename());
-           String uniqueFname = UUID.randomUUID().toString()+ "-"+originalFname;
-           Path targetLocation = uploadPath.resolve(uniqueFname);
 
-           Files.copy(file.getInputStream(),targetLocation, StandardCopyOption.REPLACE_EXISTING);
+           Files.copy(file.getInputStream(), targetLocation);
 
            record.setFileName(originalFname);
-           String contentType = file.getContentType();
-           record.setFileType((contentType == null || contentType.isEmpty())?"application/octet-stream":contentType);
-           record.setFileType(targetLocation.toString());
+           record.setFileType(file.getContentType());
+           record.setFilePath(targetLocation.toString());
        }
 
      return recordRepo.save(record);
+   }
+
+   private void validateCertificate(MultipartFile file) throws IOException {
+       if (file.isEmpty()) {
+           throw new IllegalArgumentException("Certificate file must not be empty");
+       }
+       String filename = StringUtils.cleanPath(file.getOriginalFilename() == null ? "" : file.getOriginalFilename());
+       if (filename.isBlank() || filename.contains("..") || filename.lastIndexOf('.') < 0) {
+           throw new IllegalArgumentException("Invalid certificate filename");
+       }
+       String extension = filename.substring(filename.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
+       String contentType = file.getContentType();
+       byte[] header = file.getInputStream().readNBytes(8);
+       boolean valid = switch (extension) {
+           case "pdf" -> "application/pdf".equalsIgnoreCase(contentType)
+                   && header.length >= 5 && header[0] == '%' && header[1] == 'P' && header[2] == 'D' && header[3] == 'F' && header[4] == '-';
+           case "png" -> "image/png".equalsIgnoreCase(contentType)
+                   && header.length == 8 && (header[0] & 0xff) == 0x89 && header[1] == 'P'
+                   && header[2] == 'N' && header[3] == 'G' && header[4] == 0x0d
+                   && header[5] == 0x0a && header[6] == 0x1a && header[7] == 0x0a;
+           case "jpg", "jpeg" -> "image/jpeg".equalsIgnoreCase(contentType)
+                   && header.length >= 3 && (header[0] & 0xff) == 0xff && (header[1] & 0xff) == 0xd8 && (header[2] & 0xff) == 0xff;
+           default -> false;
+       };
+       if (!valid) {
+           throw new IllegalArgumentException("Only valid PDF, PNG, and JPEG certificates are accepted");
+       }
    }
 
 }

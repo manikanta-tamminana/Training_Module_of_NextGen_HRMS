@@ -68,6 +68,14 @@ The application follows a modern client-server architecture using **React.js** f
 * Maven
 * Postman
 
+## Local configuration and setup
+
+Copy `.env.example` values into your shell or IDE run configuration. Spring Boot does not load `.env` files automatically; export the `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `FRONTEND_ORIGIN`, and `FILE_UPLOAD_DIR` variables before starting the backend. Keep the real values in a local, untracked `.env` file or your deployment secret store. The frontend reads `VITE_API_BASE_URL` at build time.
+
+Create a PostgreSQL database named `hrms` (or update `DB_URL`), then start the backend from the repository root with `mvn spring-boot:run`. Start the frontend with `npm install` and `npm run dev`; run its production build with `npm run build` and lint with `npm run lint`. Backend tests run with `mvn test`.
+
+Certificate uploads accept PDF, PNG, and JPEG files up to 5 MB. Files are written under `FILE_UPLOAD_DIR` using generated filenames. The current REST API has no authentication or authorization; certificate and employee data endpoints must only be exposed in a trusted development environment until access control is implemented.
+
 ---
 
 ## System Architecture

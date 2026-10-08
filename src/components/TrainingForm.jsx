@@ -1,5 +1,4 @@
-import React from 'react';
-import { Send, RotateCcw, Upload, FileText, X } from 'lucide-react';
+import { RotateCcw, Upload, FileText, X } from 'lucide-react';
 
 export default function TrainingForm({ formData, onChange, onSubmit, onReset, loading}) {
   const departments = [
@@ -188,7 +187,7 @@ export default function TrainingForm({ formData, onChange, onSubmit, onReset, lo
                   <div className="flex items-center gap-2 min-w-0">
                     <FileText className="w-4 h-4 text-primary-blue flex-shrink-0" />
                     <span className="truncate font-semibold text-primary-blue" title={formData.certificateFile}>
-                      {formData.certificateFile}
+                      {formData.certificateFile.name}
                     </span>
                   </div>
                   <button
@@ -209,11 +208,11 @@ export default function TrainingForm({ formData, onChange, onSubmit, onReset, lo
                     type="file"
                     id="certificateFile"
                     name="certificateFile"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    accept=".pdf,.jpg,.jpeg,.png"
                     onChange={(e) => {
                       const file = e.target.files[0];
                       if (file) {
-                        const event = { target: { name: 'certificateFile', value: file.name } };
+                        const event = { target: { name: 'certificateFile', value: file } };
                         onChange(event);
                       }
                     }}

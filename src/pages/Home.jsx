@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Header from '../components/Header';
 import Hero from '../components/Hero';
 import TrainingForm from '../components/TrainingForm';
@@ -25,7 +25,7 @@ const emptyForm = {
   issueDate: '',
   instructor: '',
   certificateNumber: '',
-  certificateFile: '',
+  certificateFile: null,
   remarks: ''
 };
 
@@ -39,13 +39,20 @@ export default function Home() {
   const formRef = useRef(null);
   const recordsRef = useRef(null);
 
-  // Initialize records from localStorage or JSON file
+  const triggerNotification = useCallback((type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => {
+      setNotification(null);
+    }, 4500);
+  }, []);
+
+  // Initialize records from the API.
   useEffect(() => {
 const loadRecords = async () => {
 try {
 const data = await fetchAllRecords();
 setRecords(data);
-} catch (error) {
+} catch {
 triggerNotification(
 "error",
 "Unable to load training records"
@@ -54,15 +61,7 @@ triggerNotification(
 };
 
 loadRecords();
-}, []);
-
-
-  const triggerNotification = (type, message) => {
-    setNotification({ type, message });
-    setTimeout(() => {
-      setNotification(null);
-    }, 4500);
-  };
+}, [triggerNotification]);
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;

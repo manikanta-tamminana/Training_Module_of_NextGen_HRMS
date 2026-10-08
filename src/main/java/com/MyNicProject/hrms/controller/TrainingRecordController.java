@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ContentDisposition;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,8 +22,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/certificates")
-@CrossOrigin(origins = "*")
 public class TrainingRecordController {
+
+    @org.springframework.beans.factory.annotation.Value("${file.upload-dir:uploads/certificates}")
+    private String uploadDir;
 
     @Autowired
     private TrainingRecordService trainingService;
@@ -58,8 +61,10 @@ public class TrainingRecordController {
                     employeeName,employeeId,department,trainingModule,trainingType,instructor,status,
                     parsedDate,remarks,certificateNumber,file);
             return ResponseEntity.ok("Training record saved successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save training record: "+ e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to save training record");
         }
     }
 
@@ -76,11 +81,16 @@ public class TrainingRecordController {
             Optional<TrainingRecord> record = trainingRepo.findById(recordId);
             if(record.isPresent() && record.get().getFilePath() !=null){
                 TrainingRecord newRecord = record.get();
-                Path filePath = Paths.get(newRecord.getFilePath()).normalize();
+                Path uploadRoot = Paths.get(uploadDir).toAbsolutePath().normalize();
+                Path filePath = Paths.get(newRecord.getFilePath()).toAbsolutePath().normalize();
+                if (!filePath.startsWith(uploadRoot)) {
+                    return ResponseEntity.notFound().build();
+                }
                 Resource resource = new UrlResource(filePath.toUri());
-                if(resource.exists()){
+                if(resource.exists() && resource.isReadable()){
                     return ResponseEntity.ok().contentType(MediaType.parseMediaType(newRecord.getFileType()))
-                            .header(HttpHeaders.CONTENT_DISPOSITION,"inline ; filename=\"" + newRecord.getFileName() +"\"")
+                            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
+                                    .filename(newRecord.getFileName()).build().toString())
                             .body(resource);
                 }
             }

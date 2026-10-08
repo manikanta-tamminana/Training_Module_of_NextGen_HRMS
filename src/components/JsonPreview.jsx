@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Copy, Check, Code } from 'lucide-react';
 
 export default function JsonPreview({ formData }) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { LayoutGrid, Table, Search, Trash2, Award, Calendar, FileText, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -46,7 +46,7 @@ export default function TrainingCards({ records, onDeleteRecord }) {
   };
 
   // Helper to determine left border color based on status
-  const getCardBorderColor = (status, idx) => {
+  const getCardBorderColor = (status) => {
     // Mirror the screenshots where some cards have blue, some have orange
     if (status === 'In Progress') return 'border-l-[4px] border-l-accent-orange';
     if (status === 'Expired') return 'border-l-[4px] border-l-rose-500';

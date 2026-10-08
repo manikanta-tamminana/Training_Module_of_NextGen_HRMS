@@ -1,5 +1,4 @@
-import React from 'react';
-import { ShieldCheck, UserCheck, BookOpen } from 'lucide-react';
+import { ShieldCheck, BookOpen } from 'lucide-react';
 import tripuraLogo from '../assets/tripura_logo.svg';
 
 export default function Header() {

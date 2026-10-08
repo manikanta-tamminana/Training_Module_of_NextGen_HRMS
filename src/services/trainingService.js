@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:8080/api/certificates";
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/certificates`;
 
 export const fetchAllRecords = async () => {
 const response = await fetch(`${API_BASE_URL}/all`);
@@ -13,8 +13,10 @@ return response.json();
 export const saveTrainingRecord = async (formData) => {
 const payload = new FormData();
 
-Object.keys(formData).forEach((key) => {
-payload.append(key, formData[key]);
+Object.entries(formData).forEach(([key, value]) => {
+  if (value !== null && value !== undefined && value !== '') {
+    payload.append(key, value);
+  }
 });
 
 const response = await fetch(`${API_BASE_URL}/save`, {

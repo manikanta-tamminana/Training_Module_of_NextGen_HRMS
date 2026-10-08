@@ -1,4 +1,3 @@
-import React from 'react';
 import nicLogo from '../assets/nic_logo.svg';
 import meityLogo from '../assets/meity_logo.svg';
 
